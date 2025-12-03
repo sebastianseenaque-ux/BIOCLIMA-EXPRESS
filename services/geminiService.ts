@@ -44,15 +44,15 @@ export const generateRecommendations = async (data: ProjectData): Promise<Recomm
             RecommendationCategory.SHADING,
             RecommendationCategory.MATERIAL
           ],
-          description: "The category of the bioclimatic strategy."
+          description: "The category of the bioclimatic strategy. Must be one of: 'Ventilation', 'Shading', 'Material'."
         },
         title: {
           type: Type.STRING,
-          description: "A short, punchy title for the recommendation."
+          description: "A short, punchy title for the recommendation in Spanish."
         },
         description: {
           type: Type.STRING,
-          description: "A detailed but concise explanation of the strategy (2-3 sentences)."
+          description: "A detailed but concise explanation of the strategy (2-3 sentences) in Spanish."
         }
       },
       required: ["category", "title", "description"]
@@ -60,18 +60,20 @@ export const generateRecommendations = async (data: ProjectData): Promise<Recomm
   };
 
   const prompt = `
-    Act as an expert bioclimatic architect.
-    Generate 3 specific design recommendations for a project with the following details:
-    - Location: ${data.location}
-    - Land Orientation: ${data.orientation}
-    - Usage: ${data.usage}
+    Analiza el siguiente proyecto y genera recomendaciones bioclimáticas específicas:
+    - Ubicación/Clima: ${data.location}
+    - Orientación del terreno: ${data.orientation}
+    - Uso del espacio: ${data.usage}
 
-    Please provide exactly one recommendation for each of these categories:
-    1. Ventilation (Airflow strategies)
-    2. Shading (Solar control)
-    3. Material (Thermal mass/Insulation)
+    Genera exactamente 3 recomendaciones, una para cada categoría:
+    1. Ventilación (Estrategias de flujo de aire natural)
+    2. Sombreamiento (Control solar pasivo)
+    3. Material (Inercia térmica o aislamiento según clima)
 
-    The response must be in Spanish.
+    REGLAS:
+    - El campo 'category' debe ser EXACTAMENTE uno de los valores en Inglés: 'Ventilation', 'Shading', 'Material'.
+    - El 'title' y 'description' deben estar en Español.
+    - Las recomendaciones deben ser técnicas pero accesibles.
   `;
 
   try {
@@ -79,6 +81,7 @@ export const generateRecommendations = async (data: ProjectData): Promise<Recomm
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
+        systemInstruction: "Eres un arquitecto experto en diseño bioclimático y sostenibilidad. Tu objetivo es dar consejos prácticos y de alto impacto.",
         responseMimeType: "application/json",
         responseSchema: schema,
         temperature: 0.7,
