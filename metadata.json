@@ -1,0 +1,5 @@
+{
+  "name": "BioClima Express",
+  "description": "An intelligent bioclimatic analysis tool providing immediate design strategies for architectural projects based on location and orientation.",
+  "requestFramePermissions": []
+}
